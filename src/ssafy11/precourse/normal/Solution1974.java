@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Solution1974 {
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));;
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     static int[][] graph;
 

@@ -14,7 +14,7 @@ public class Solution12712 {
 
     static int[][] direction1 = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     static int[][] direction2 = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));;
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
     public static void main(String[] args) throws IOException {

@@ -5,11 +5,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Solution4193 {
@@ -19,14 +19,15 @@ public class Solution4193 {
 
     static int n;
     static int[][] map;
-    static List<int[]> obstacle;
     static boolean[][] visited;
-    static int[][] direction = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    static Pos start, end;
+    static int[][] direction = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     public static void main(String[] args) throws IOException {
         int t = Integer.parseInt(br.readLine());
         for (int i = 0; i < t; i++) {
             n = Integer.parseInt(br.readLine());
+            visited = new boolean[n][n];
 
             map = new int[n][n];
             for (int j = 0; j < n; j++) {
@@ -35,67 +36,94 @@ public class Solution4193 {
                         .toArray();
             }
 
-            obstacle = new ArrayList<>();
-            for (int row = 0; row < n; row++) {
-                for (int column = 0; column < n; column++) {
-                    if (map[row][column] == 2) {
-                        obstacle.add(new int[] { row, column });
-                    }
-                }
+            st = new StringTokenizer(br.readLine());
+            start = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+
+            st = new StringTokenizer(br.readLine());
+            end = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+
+            if (isBlocked()) {
+                bw.write(String.format("#%d -1", i + 1));
+                bw.newLine();
+                continue;
             }
 
-            st = new StringTokenizer(br.readLine());
-            Pos start = new Pos(st.nextToken(), st.nextToken(), 0);
+            bw.write(String.format("#%d %d", i + 1, solution()));
+            bw.newLine();
+        }
+        bw.flush();
+        bw.close();
+    }
 
-            st = new StringTokenizer(br.readLine());
-            Pos end = new Pos(st.nextToken(), st.nextToken(), 0);
+    static int solution() {
+        Set<Pos> positions = new HashSet<>();
+        positions.add(start);
+        visited[start.y][start.x] = true;
 
-            visited = new boolean[n][n];
-            solution(start, end);
+        int t = 0;
+        while (true) {
+            t++;
+            Set<Pos> tmp = new HashSet<>(positions);
+            for (Pos curr : tmp) {
+                for (int[] d : direction) {
+                    int nextY = curr.y + d[0];
+                    int nextX = curr.x + d[1];
+                    if (nextX < 0 || nextX >= n || nextY < 0 || nextY >= n) {
+                        continue;
+                    }
+                    if (visited[nextY][nextX]) {
+                        continue;
+                    }
+                    if (map[nextY][nextX] == 1) {
+                        continue;
+                    }
+                    if (map[nextY][nextX] == 2 && t % 3 != 0) {
+                        continue;
+                    }
+                    visited[nextY][nextX] = true;
+                    positions.add(new Pos(nextY, nextX));
+                }
+            }
+            if (visited[end.y][end.x]) {
+                return t;
+            }
         }
     }
 
-    static void solution(Pos start, Pos end) {
-        Queue<Pos> queue = new LinkedList<>();
-        queue.offer(start);
+    static boolean isBlocked() {
+        boolean[][] visited = new boolean[n][n];
+        Queue<Pos> q = new LinkedList<>();
+        q.add(start);
+        visited[start.y][start.x] = true;
 
-        while (!queue.isEmpty()) {
-            Pos curr = queue.poll();
-
-            if (map[curr.y][curr.x] == 2 && curr.depth % 3 != 2) {
-
-            }
-
+        while (!q.isEmpty()) {
+            Pos curr = q.poll();
             for (int[] d : direction) {
                 int nextY = curr.y + d[0];
                 int nextX = curr.x + d[1];
-
-                if (nextY < 0 || nextY >= n || nextX < 0 || nextX >= n) {
+                if (nextX < 0 || nextX >= n || nextY < 0 || nextY >= n) {
                     continue;
                 }
-                if (visited[nextY][nextX] || map[nextY][nextX] == 1) {
+                if (visited[nextY][nextX]) {
                     continue;
                 }
-                if (map[nextY][nextX] == 2 && curr.depth % 3 != 2) {
+                if (map[nextY][nextX] == 1) {
                     continue;
                 }
-
-                queue.offer(new Pos(nextY, nextX, curr.depth + 1));
+                visited[nextY][nextX] = true;
+                q.add(new Pos(nextY, nextX));
             }
         }
+
+        return !visited[end.y][end.x];
     }
 
     static class Pos {
-        int x, y, depth;
+        int x, y;
 
-        public Pos(int y, int x, int depth) {
-            this.x = x;
+        public Pos(int y, int x) {
             this.y = y;
-            this.depth = depth;
-        }
-
-        public Pos(String x, String y, int depth) {
-            this(Integer.parseInt(x), Integer.parseInt(y), depth);
+            this.x = x;
         }
     }
 }

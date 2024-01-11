@@ -8,11 +8,10 @@ public class Solution1247 {
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     static StringTokenizer st;
 
-    static int n;
+    static int n, ans, acc;
     static Pos[] positions;
     static boolean[] visited;
     static Stack<Integer> stack;
-    static int ans;
     static Pos start, end;
 
     public static void main(String[] args) throws IOException {
@@ -44,51 +43,36 @@ public class Solution1247 {
             positions[i] = new Pos(x, y);
         }
 
-        backtracking();
+        backtracking(start, 0);
     }
 
-    static void backtracking() {
-        if (stack.size() == n) {
-            List<Integer> sequence = new ArrayList<>(stack);
-            ans = Math.min(ans, getDistance(sequence));
+    static void backtracking(Pos prev, int depth) {
+        if (depth == n) {
+            ans = Math.min(ans, acc + prev.move(end));
             return;
         }
         for (int i = 0; i < n; i++) {
             if (visited[i]) {
                 continue;
             }
-            stack.push(i);
+            acc += prev.move(positions[i]);
             visited[i] = true;
-            backtracking();
+            backtracking(positions[i], depth + 1);
             visited[i] = false;
-            stack.pop();
+            acc -= prev.move(positions[i]);
         }
     }
 
-    static int getDistance(List<Integer> sequence) {
-        int acc = 0;
+    static class Pos {
+        int x, y;
 
-        Pos prev = start;
-        for (Integer i : sequence) {
-            Pos curr = positions[i];
-            acc += prev.move(curr);
-            prev = curr;
+        public Pos(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
-        acc += prev.move(end);
 
-        return acc;
-    }
-}
-
-class Pos {
-    int x, y;
-
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int move(Pos target) {
-        return Math.abs(x - target.x) + Math.abs(y - target.y);
+        public int move(Pos target) {
+            return Math.abs(x - target.x) + Math.abs(y - target.y);
+        }
     }
 }

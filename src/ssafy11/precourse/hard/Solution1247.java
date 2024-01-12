@@ -1,18 +1,23 @@
 package ssafy11.precourse.hard;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 public class Solution1247 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     static StringTokenizer st;
 
-    static int n, ans, acc;
+    static int n, ans;
     static Pos[] positions;
     static boolean[] visited;
     static Stack<Integer> stack;
-    static Pos start, end;
+    static Pos end;
 
     public static void main(String[] args) throws IOException {
         int t = Integer.parseInt(br.readLine());
@@ -34,7 +39,7 @@ public class Solution1247 {
         visited = new boolean[n];
         ans = Integer.MAX_VALUE;
 
-        start = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+        Pos start = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
         end = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 
         for (int i = 0; i < n; i++) {
@@ -43,10 +48,13 @@ public class Solution1247 {
             positions[i] = new Pos(x, y);
         }
 
-        backtracking(start, 0);
+        backtracking(start, 0, 0);
     }
 
-    static void backtracking(Pos prev, int depth) {
+    static void backtracking(Pos prev, int depth, int acc) {
+        if (acc >= ans) {
+            return;
+        }
         if (depth == n) {
             ans = Math.min(ans, acc + prev.move(end));
             return;
@@ -55,11 +63,9 @@ public class Solution1247 {
             if (visited[i]) {
                 continue;
             }
-            acc += prev.move(positions[i]);
             visited[i] = true;
-            backtracking(positions[i], depth + 1);
+            backtracking(positions[i], depth + 1, acc + prev.move(positions[i]));
             visited[i] = false;
-            acc -= prev.move(positions[i]);
         }
     }
 
